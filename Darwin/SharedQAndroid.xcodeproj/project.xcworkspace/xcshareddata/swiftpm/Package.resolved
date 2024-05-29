@@ -1,0 +1,77 @@
+{
+  "pins" : [
+    {
+      "identity" : "sharedqprotocol",
+      "kind" : "remoteSourceControl",
+      "location" : "git@github.com:paytontech/sharedqprotocol.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "d88811264bc588f5ef626989c8863b42dc1f3ffd"
+      }
+    },
+    {
+      "identity" : "sharedqsync",
+      "kind" : "remoteSourceControl",
+      "location" : "git@github.com:paytontech/sharedqsync.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "6f18a0487efa8a747c0e76dd4dea0ecf1be9e64b"
+      }
+    },
+    {
+      "identity" : "skip",
+      "kind" : "remoteSourceControl",
+      "location" : "https://source.skip.tools/skip.git",
+      "state" : {
+        "revision" : "0000599b3ebd313fd4358cf20c4e695f41a91640",
+        "version" : "0.8.45"
+      }
+    },
+    {
+      "identity" : "skip-foundation",
+      "kind" : "remoteSourceControl",
+      "location" : "https://source.skip.tools/skip-foundation.git",
+      "state" : {
+        "revision" : "ed345b753237dfa1746e2d7365083fb9143963ee",
+        "version" : "0.6.11"
+      }
+    },
+    {
+      "identity" : "skip-lib",
+      "kind" : "remoteSourceControl",
+      "location" : "https://source.skip.tools/skip-lib.git",
+      "state" : {
+        "revision" : "090bab3b0b34f9503d363cd5fb1004dfd4340e39",
+        "version" : "0.7.12"
+      }
+    },
+    {
+      "identity" : "skip-model",
+      "kind" : "remoteSourceControl",
+      "location" : "https://source.skip.tools/skip-model.git",
+      "state" : {
+        "revision" : "1cc61fc5affe418d5ea14dbcf12e09ca3b6c54b1",
+        "version" : "0.7.0"
+      }
+    },
+    {
+      "identity" : "skip-ui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://source.skip.tools/skip-ui.git",
+      "state" : {
+        "revision" : "b3cf5066aa0c6afd989ecea656089c4557555003",
+        "version" : "0.9.3"
+      }
+    },
+    {
+      "identity" : "skip-unit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://source.skip.tools/skip-unit.git",
+      "state" : {
+        "revision" : "61d6e0ed30b3f98293c6a8dd94ed1aa08152c050",
+        "version" : "0.6.5"
+      }
+    }
+  ],
+  "version" : 2
+}

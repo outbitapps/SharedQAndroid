@@ -1,0 +1,4 @@
+module SkipUnit {
+    header "/Users/paytondev/Documents/sharedq-skip/.build/arm64-apple-macosx/debug/SkipUnit.build/SkipUnit-Swift.h"
+    requires objc
+}
