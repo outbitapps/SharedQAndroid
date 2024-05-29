@@ -1,4 +1,0 @@
-module SharedQAndroid {
-    header "/Users/paytondev/Documents/sharedq-skip/.build/arm64-apple-macosx/debug/SharedQAndroid.build/SharedQAndroid-Swift.h"
-    requires objc
-}

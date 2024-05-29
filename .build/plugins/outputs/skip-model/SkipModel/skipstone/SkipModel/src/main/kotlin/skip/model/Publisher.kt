@@ -1,1 +1,0 @@
-/Users/paytondev/Documents/sharedq-skip/.build/checkouts/skip-model/Sources/SkipModel/Skip/Publisher.kt
