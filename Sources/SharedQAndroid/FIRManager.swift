@@ -17,7 +17,7 @@ class FIRManager {
     var authToken: String?
     var syncManager: SharedQSyncManager
     var setupQueue = false
-    var env = ServerID.beta
+    var env = ServerID.superDev
     var baseURL: String
     var baseWSURL: String
     static var shared = FIRManager()
