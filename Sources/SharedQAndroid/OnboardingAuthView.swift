@@ -16,52 +16,54 @@ enum CurrentAuthView {
 }
 
 struct OnboardingAuthView: View {
+   
     @State var currentView: CurrentAuthView = .none
     var body: some View {
         ZStack {
-            LinearGradient(colors: [SharedQAssets.appGradient1, SharedQAssets.appGradient2], startPoint: .topLeading, endPoint: .bottomTrailing).ignoresSafeArea()
             VStack {
                 Text(verbatim: "Welcome to SharedQ").font(.system(.largeTitle)).fontWeight(.bold)
                 
                 Text("create a shared music queue no matter what streaming service you use").multilineTextAlignment(.center)
                 Spacer()
-                switch currentView {
-                case .none:
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 20.0).foregroundStyle(.black)
-                        GeometryReader(content: { geometry in
-                            HStack {
-                                ZStack {
-    //                                RoundedRectangle(cornerRadius: 10.0).foregroundStyle(SharedQAssets.buttonDark)
-                                    Image(systemName: "envelope.fill").foregroundStyle(.white)
-                                }.frame(width: geometry.size.width / 6)
-                                Button(action: {
-                                    withAnimation(.spring) {
-                                        currentView = .signup
-                                    }
-                                }, label: {
+                ZStack {
+                    switch currentView {
+                    case .none:
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 20.0).foregroundStyle(.black)
+                            GeometryReader(content: { geometry in
+                                HStack {
                                     ZStack {
-                                        RoundedRectangle(cornerRadius: 10.0).foregroundStyle(SharedQAssets.buttonDark)
-                                        Text("Sign Up").foregroundStyle(.white)
-                                    }
-                                })
-                                Button(action: /*@START_MENU_TOKEN@*/{}/*@END_MENU_TOKEN@*/, label: {
-                                    ZStack {
-                                        RoundedRectangle(cornerRadius: 10.0).foregroundStyle(SharedQAssets.buttonDark)
-                                        Text("Log In").foregroundStyle(.white)
-                                    }
-                                })
-                            }.padding(10)
-                        })
-                    }.frame(height: 70)
-                case .signup:
-                    SignupView().transition(.scale)
-                case .login:
-                    Text("LoginView")
+        //                                RoundedRectangle(cornerRadius: 10.0).foregroundStyle(SharedQAssets.buttonDark)
+                                        Image(systemName: "envelope.fill").foregroundStyle(.white)
+                                    }.frame(width: geometry.size.width / 6)
+                                    Button(action: {
+                                        withAnimation(.spring) {
+                                            currentView = .signup
+                                        }
+                                    }, label: {
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 10.0).foregroundStyle(SharedQAssets.buttonDark)
+                                            Text("Sign Up").foregroundStyle(.white)
+                                        }
+                                    })
+                                    Button(action: /*@START_MENU_TOKEN@*/{}/*@END_MENU_TOKEN@*/, label: {
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 10.0).foregroundStyle(SharedQAssets.buttonDark)
+                                            Text("Log In").foregroundStyle(.white)
+                                        }
+                                    })
+                                }.padding(10)
+                            })
+                        }.frame(height: 70)
+                    case .signup:
+                        SignupView().transition(.scale).frame(height: 500)
+                    case .login:
+                        Text("LoginView")
+                    }
                 }
                 
             }.padding()
-        }.preferredColorScheme(.dark)
+        }
     }
 }
 struct SharedQAssets {
@@ -71,27 +73,56 @@ struct SharedQAssets {
 }
 
 struct SignupView: View {
+    @AppStorage("accountCreated") var accountCreated = false
     @State var username = ""
     @State var email = ""
     @State var password = ""
+    @State var error: String?
+    @State var loading = false
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 35.0).foregroundStyle(.black)
             VStack {
-                TextField("username...", text: $username).textFieldStyle(.plain).roundedBorder(15.0, color: Color.white, width: 1.0).padding(.bottom)
-                TextField("email...", text: $email).textFieldStyle(.plain).roundedBorder(15.0, color: Color.white, width: 1.0).padding(.bottom)
-                SecureField("password...", text: $password).textFieldStyle(.plain).roundedBorder(15.0, color: Color.white, width: 1.0).padding(.bottom)
+                if let error {
+                    Text(error).foregroundStyle(.red)
+                }
+                VStack(alignment: .leading) {
+                    Text("username").font(.callout).foregroundStyle(.white)
+                    TextField("username...", text: $username).textFieldStyle(.plain).roundedBorder(15.0, color: Color.white, width: 1.0).padding(.bottom)
+                }
+                VStack(alignment: .leading, content: {
+                    Text("email").font(.callout).foregroundStyle(.white)
+                    TextField("email...", text: $email).textFieldStyle(.plain).roundedBorder(15.0, color: Color.white, width: 1.0).padding(.bottom)
+                })
+                VStack(alignment: .leading, content: {
+                    Text("password").font(.callout).foregroundStyle(.white)
+                    SecureField("password...", text: $password).textFieldStyle(.plain).roundedBorder(15.0, color: Color.white, width: 1.0).padding(.bottom)
+                })
                 Spacer()
                 Button(action: {
-                    Task {
-                        await FIRManager.shared.signUp(username:username, email:email, password:password)
+                    if !loading {
+                        loading = true
+                        Task {
+                            let res = await FIRManager.shared.signUp(username:username, email:email, password:password)
+                            loading = false
+                            if res == .success {
+                                accountCreated = true
+                            } else {
+                                error = res.rawValue
+                            }
+                        }
                     }
                 }, label: {
                     ZStack {
-                        RoundedRectangle(cornerRadius: 15.0).foregroundStyle(SharedQAssets.buttonDark)
-                        Text("Sign Up").foregroundStyle(.white)
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 15.0).foregroundStyle(SharedQAssets.buttonDark)
+                            Text("Sign Up").foregroundStyle(.white)
+                        }.opacity(loading ? 0.5 : 1.0)
+                        if loading {
+                            ProgressView()
+                        }
                     }
-                }).frame(height: 60)
+                }).frame(height: 60).disabled(loading)
             }.padding(20)
         }
     }

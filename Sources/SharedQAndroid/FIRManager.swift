@@ -119,9 +119,12 @@ class FIRManager {
                 return SQSignUpResponse.success
             } else {
                 if let http = res.http {
-                    print(http.statusCode)
+                    logger.log(level: .debug, "\(http.statusCode)")
                     if http.statusCode == 409 {
                         return .alreadyExists
+                    }
+                    if http.statusCode == 406 {
+                        return .badValue
                     }
                 }
             }
@@ -333,4 +336,5 @@ enum SQSignUpResponse: String {
     case alreadyExists = "That account alredy exists! Try logging in instead."
     case noConnection = "Unable to reach SharedQ. Maybe check your network connection?"
     case incorrectPassword = "That password wasn't correct. Try again!"
+    case badValue = "Either your username, email, or password was invalid. Try again!"
 }
