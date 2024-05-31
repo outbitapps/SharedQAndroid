@@ -30,6 +30,9 @@
         }
       }
     },
+    "Apple Music" : {
+
+    },
     "create a shared music queue no matter what streaming service you use" : {
 
     },
@@ -66,6 +69,9 @@
 
     },
     "email..." : {
+
+    },
+    "Final Notes" : {
 
     },
     "Hello %@!" : {
@@ -126,6 +132,9 @@
         }
       }
     },
+    "It's fucked, sorry!" : {
+
+    },
     "Item %lld" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -154,6 +163,9 @@
           }
         }
       }
+    },
+    "Let's do this!" : {
+
     },
     "Light" : {
       "extractionState" : "stale",
@@ -187,7 +199,7 @@
     "Log In" : {
 
     },
-    "LoginView" : {
+    "Music Service" : {
 
     },
     "Name" : {
@@ -315,6 +327,9 @@
     "Sign Up" : {
 
     },
+    "Spotify" : {
+
+    },
     "System" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -380,6 +395,9 @@
       }
     },
     "Welcome to SharedQ" : {
+
+    },
+    "you're ready to use SharedQ, a shared music queue which works regardless of what streaming service you use. but first, here's how Shared Queue works:" : {
 
     }
   },
