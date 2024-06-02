@@ -20,11 +20,11 @@ struct GroupConfirmationView: View {
             Text("is currently listening to").font(.title2).fontWeight(.medium)
             
             VStack {
-                AsyncImage(url: group.currentlyPlaying?.albumArt) { img in
-                    img.resizable().aspectRatio(contentMode: .fit).cornerRadius(15.0)
-                } placeholder: {
-                    Image("mediaItemPlaceholder", bundle: .module, label: Text("Placeholder cover art")).resizable().aspectRatio(contentMode: .fit).cornerRadius(15.0)
-                }.padding(.horizontal, 30)
+//                AsyncImage(url: group.currentlyPlaying?.albumArt) { img in
+//                    img.resizable().aspectRatio(contentMode: .fit).cornerRadius(15.0).frame(height: 300)
+//                } placeholder: {
+//                    Image("mediaItemPlaceholder", bundle: .module, label: Text("Placeholder cover art")).resizable().aspectRatio(contentMode: .fit).cornerRadius(15.0)
+//                }.padding(.horizontal, 30)
                 Text(group.currentlyPlaying?.title ?? "Nothing playing").font(.title2).fontWeight(.medium)
                 Text(group.currentlyPlaying?.artist ?? "Nobody").opacity(0.9).font(.title3)
             }

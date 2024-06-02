@@ -54,7 +54,7 @@ public struct ContentView: View {
                 }
             }
         }).fullScreenCover(isPresented: $needsOnboarding, content: {
-            OnboardingAuthView()
+            OnboardingAuthView().navigationBarBackButtonHidden()
         }).sheet(isPresented: $groupCreationView, onDismiss: {
             Task {
                 if groupBeingCreated != nil {
@@ -95,18 +95,18 @@ struct HomeGroupCell: View {
                 Text("Last used \(lastConnectedString()) ∙ \(group.publicGroup ? "Public Group" : "Private Group")").foregroundStyle(.secondary)
             }
             Spacer()
-            if let currentSong = group.currentlyPlaying {
-                AsyncImage(url: currentSong.albumArt) { img in
-                    img.resizable().frame(width: 50, height: 50).cornerRadius(5.0)
-                } placeholder: {
-                    Image("mediaItemPlaceholder", bundle: .module, label: Text("Placeholder Cover Art")).resizable().frame(width: 50, height: 50).cornerRadius(5.0)
-                }
+//            if let currentSong = group.currentlyPlaying {
+//                AsyncImage(url: currentSong.albumArt) { img in
+//                    img.resizable().frame(width: 50, height: 50).cornerRadius(5.0)
+//                } placeholder: {
+//                    Image("mediaItemPlaceholder", bundle: .module, label: Text("Placeholder Cover Art")).resizable().frame(width: 50, height: 50).cornerRadius(5.0)
+//                }
 
-            } else {
+//            } else {
                 RoundedRectangle(cornerRadius: 5.0).frame(width: 50, height: 50).opacity(0).overlay {
                     RoundedRectangle(cornerRadius: 5.0).stroke(Color.gray, lineWidth: 1.0)
                 }
-            }
+//            }
         }
     }
 

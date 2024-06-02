@@ -23,7 +23,7 @@ struct OnboardingFinalNotes: View {
                 } label: {
                     HStack {
                         Text("Let's do this!")
-                        Image(systemName: "heart.fill")
+//                        Image(systemName: "heart.fill")
                     }
                         
                 }.frame(height: 70).padding().buttonStyle(.borderedProminent)
@@ -41,12 +41,12 @@ struct HowItWorksCard: View {
     var content: String
     var body: some View {
         HStack {
-            Image(systemName: systemImage).font(.title3).frame(width: 50)
+//            Image(systemName: systemImage)
             VStack(alignment: .leading) {
                 Text(title).font(.title3).bold()
                 Text(content)
             }
-        }.opacity(0.8)
+        }
     }
 }
 

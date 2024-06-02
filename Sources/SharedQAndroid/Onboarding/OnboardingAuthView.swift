@@ -42,7 +42,7 @@ struct OnboardingAuthView: View {
                                 GeometryReader(content: { geometry in
                                     HStack {
                                         ZStack {
-                                            Image(systemName: "envelope.fill").foregroundStyle(.white)
+//                                            Image(systemName: "envelope.fill").foregroundStyle(.white)
                                         }.frame(width: geometry.size.width / 6)
                                         Button(action: {
                                             withAnimation(.spring) {

@@ -14,14 +14,14 @@ struct OnboardingMusicServices: View {
                 HStack {
                     Text("Spotify")
                     Spacer()
-                    Image(systemName: "chevron.right")
+//                    Image(systemName: "chevron.right")
                 }.onTapGesture {
                     navPath.append("final-notes")
                 }
                 HStack {
                     Text("Apple Music")
                     Spacer()
-                    Image(systemName: "chevron.right")
+//                    Image(systemName: "chevron.right")
                 }.onTapGesture {
                     navPath.append("final-notes")
                 }
