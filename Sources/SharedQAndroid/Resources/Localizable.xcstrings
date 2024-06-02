@@ -324,6 +324,9 @@
         }
       }
     },
+    "sharedq %@" : {
+
+    },
     "Sign Up" : {
 
     },
@@ -397,7 +400,7 @@
     "Welcome to SharedQ" : {
 
     },
-    "you're ready to use SharedQ, a shared music queue which works regardless of what streaming service you use. but first, here's how Shared Queue works:" : {
+    "you're ready to use SharedQ, a shared music queue which works regardless of what streaming service you use. but first, here's how SharedQ works:" : {
 
     }
   },

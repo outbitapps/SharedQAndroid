@@ -97,6 +97,7 @@ struct SharedQAssets {
 }
 
 struct SignupView: View {
+    @Environment(FIRManager.self) var firManager
     @AppStorage("accountCreated") var accountCreated = false
     @State var username = ""
     @State var email = ""
@@ -128,7 +129,7 @@ struct SignupView: View {
                     if !loading {
                         loading = true
                         Task {
-                            let res = await FIRManager.shared.signUp(username:username, email:email, password:password)
+                            let res = await firManager.signUp(username:username, email:email, password:password)
                             loading = false
                             if res == .success {
                                 accountCreated = true
@@ -155,6 +156,7 @@ struct SignupView: View {
 }
 
 struct LoginView: View {
+    @Environment(FIRManager.self) var firManager
     @AppStorage("accountCreated") var accountCreated = false
     @State var email = ""
     @State var password = ""
@@ -181,7 +183,7 @@ struct LoginView: View {
                     if !loading {
                         loading = true
                         Task {
-                            let res = await FIRManager.shared.signIn(email:email, password:password)
+                            let res = await firManager.signIn(email:email, password:password)
                             loading = false
                             if res == .success {
                                 accountCreated = true
@@ -195,7 +197,7 @@ struct LoginView: View {
                     ZStack {
                         ZStack {
                             RoundedRectangle(cornerRadius: 15.0).foregroundStyle(SharedQAssets.buttonDark)
-                            Text("Sign Up").foregroundStyle(.white)
+                            Text("Log In").foregroundStyle(.white)
                         }.opacity(loading ? 0.5 : 1.0)
                         if loading {
                             ProgressView()

@@ -8,7 +8,9 @@
 import Foundation
 import SharedQSync
 import SharedQProtocol
+import Observation
 
+@Observable
 class FIRManager {
     var currentUser: SQUser?
     var connectedGroup: SQGroup?
@@ -17,14 +19,14 @@ class FIRManager {
     var authToken: String?
     var syncManager: SharedQSyncManager
     var setupQueue = false
-    var env = ServerID.superDev
+    var env: ServerID
     var baseURL: String
     var baseWSURL: String
-    static var shared = FIRManager()
-    init() {
+    init(env: ServerID = ServerID.superDev) {
+        self.env = env
         baseURL = "http://\(env.rawValue)"
         baseWSURL = "ws://\(env.rawValue)"
-        syncManager = SharedQSyncManager(serverURL: URL(string: baseURL)!, websocketURL: URL(string: baseWSURL)!)
+        syncManager = SharedQSyncManager(serverURL: URL(string: "http://\(env.rawValue)")!, websocketURL: URL(string: "ws://\(env.rawValue)")!)
 //        syncManager.delegate = self
         authToken = UserDefaults.standard.string(forKey: "auth_token")
         Task {
@@ -33,13 +35,13 @@ class FIRManager {
     }
 
     func refreshData() async {
-        print("refresh")
+        logger.log(level: .debug, "refresh \(self.authToken ?? "no token")")
         if let authToken = authToken {
             var userRequest = URLRequest(url: URL(string: "\(baseURL)/users/fetch-user")!)
             userRequest.httpMethod = "GET"
 //            userRequest.httpBody = try! JSONEncoder().encode(FetchUserRequest(uid: Auth.auth().currentUser!.uid))
             userRequest.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
-            print(userRequest.allHTTPHeaderFields)
+            logger.log(level: .debug, "\(userRequest.allHTTPHeaderFields ?? [:])")
             do {
                 let (data, res) = try await URLSession.shared.data(for: userRequest)
                 if let user = try? JSONDecoder().decode(SQUser.self, from: data) {
@@ -57,8 +59,10 @@ class FIRManager {
                     }
                 }
             } catch {
-                print(error)
+                logger.error("error getting user: \(error)")
             }
+        } else {
+            logger.error("no auth token")
         }
     }
     
@@ -111,7 +115,7 @@ class FIRManager {
 //            }
             if let tokenResponse = try? JSONDecoder().decode(NewSession.self, from: data) {
                 print(tokenResponse.token)
-//                UserDefaults.standard.setValue(tokenResponse.token, forKey: "auth_token")
+                UserDefaults.standard.set(tokenResponse.token, forKey: "auth_token")
                 DispatchQueue.main.async {
                     self.currentUser = tokenResponse.user
                     self.authToken = tokenResponse.token
@@ -139,11 +143,13 @@ class FIRManager {
         userRequest.httpMethod = "PUT"
 //        userRequest.httpBody = try? JSONEncoder().encode(UserSignup(email: email, username: username, password: password))
         userRequest.addValue("Basic \("\(email.lowercased()):\(password)".data(using: .utf8)?.base64EncodedString() ?? "asf")", forHTTPHeaderField: "Authorization")
+        //fuck you Swift
+        userRequest.httpBody = Data()
         do {
             let (data, res) = try await URLSession.shared.data(for: userRequest)
             if let tokenResponse = try? JSONDecoder().decode(NewSession.self, from: data) {
                 print(tokenResponse.token)
-//                UserDefaults.standard.setValue(tokenResponse.token, forKey: "auth_token")
+                UserDefaults.standard.set(tokenResponse.token, forKey: "auth_token")
                 DispatchQueue.main.async {
                     self.currentUser = tokenResponse.user
                     self.authToken = tokenResponse.token
@@ -158,7 +164,7 @@ class FIRManager {
                 }
             }
         } catch {
-            print(error)
+            logger.error("error logging in: \(error)")
         }
         return SQSignUpResponse.noConnection
 

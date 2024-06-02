@@ -1,16 +1,19 @@
 import SwiftUI
+import Foundation
 
 public struct ContentView: View {
-    @AppStorage("tab") var tab = Tab.welcome
-    @AppStorage("name") var name = "Skipper"
-    @State var appearance = ""
-    @State var isBeating = false
-
+    
+    @AppStorage("needsOnboarding") var needsOnboarding = true
+    @Environment(FIRManager.self) var firManager
     public init() {
     }
 
     public var body: some View {
-        OnboardingAuthView()
+        VStack {
+            Text("sharedq \(firManager.currentUser?.username ?? "no user")")
+        }.fullScreenCover(isPresented: $needsOnboarding, content: {
+            OnboardingAuthView()
+        })
     }
 }
 

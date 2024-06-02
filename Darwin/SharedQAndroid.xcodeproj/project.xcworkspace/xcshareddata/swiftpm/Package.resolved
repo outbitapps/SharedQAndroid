@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://source.skip.tools/skip.git",
       "state" : {
-        "revision" : "0000599b3ebd313fd4358cf20c4e695f41a91640",
-        "version" : "0.8.45"
+        "revision" : "52f2383a64059cbcbcd68985cbd15470e379ec9d",
+        "version" : "0.8.46"
       }
     },
     {
@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://source.skip.tools/skip-ui.git",
       "state" : {
-        "revision" : "b3cf5066aa0c6afd989ecea656089c4557555003",
-        "version" : "0.9.3"
+        "revision" : "92c0569fe52e3b02bd0fb9bde01a7bc44b9fa817",
+        "version" : "0.9.6"
       }
     },
     {
