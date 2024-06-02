@@ -9,6 +9,7 @@ import Foundation
 import SharedQSync
 import SharedQProtocol
 import Observation
+import OSLog
 
 @Observable
 class FIRManager {
@@ -23,39 +24,41 @@ class FIRManager {
     var baseURL: String
     var baseWSURL: String
     init(env: ServerID = ServerID.superDev) {
+        logger.debug("construcyor")
         self.env = env
         baseURL = "http://\(env.rawValue)"
         baseWSURL = "ws://\(env.rawValue)"
         syncManager = SharedQSyncManager(serverURL: URL(string: "http://\(env.rawValue)")!, websocketURL: URL(string: "ws://\(env.rawValue)")!)
-//        syncManager.delegate = self
-        authToken = UserDefaults.standard.string(forKey: "auth_token")
-        Task {
-            await self.refreshData()
-        }
+        syncManager.delegate = self
+            authToken = UserDefaults.standard.string(forKey: "auth_token")
+            self.refreshData()
     }
 
-    func refreshData() async {
-        logger.log(level: .debug, "refresh \(self.authToken ?? "no token")")
+    func refreshData() {
+        self.loaded = false
         if let authToken = authToken {
+            
             var userRequest = URLRequest(url: URL(string: "\(baseURL)/users/fetch-user")!)
             userRequest.httpMethod = "GET"
-//            userRequest.httpBody = try! JSONEncoder().encode(FetchUserRequest(uid: Auth.auth().currentUser!.uid))
             userRequest.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
-            logger.log(level: .debug, "\(userRequest.allHTTPHeaderFields ?? [:])")
+            logger.log(level: .debug, "about to make request")
             do {
-                let (data, res) = try await URLSession.shared.data(for: userRequest)
-                if let user = try? JSONDecoder().decode(SQUser.self, from: data) {
-                    DispatchQueue.main.async {
-                        self.currentUser = user
-                        print(self.currentUser?.username)
-                        self.loaded = true
-                    }
-                } else {
-                    print(String(data: data, encoding: .utf8))
-                    if let http = res.http, http.statusCode == 401 {
-                        UserDefaults.standard.set(false, forKey: "accountCreated")
-                        UserDefaults.standard.set(false, forKey: "accountSetup")
-                        UserDefaults.standard.set(false, forKey: "completedOnboarding")
+                Task { [userRequest] in
+                    let (data, res) = try await URLSession.shared.data(for: userRequest)
+                    if let user = try? JSONDecoder().decode(SQUser.self, from: data) {
+                        DispatchQueue.main.async {
+                            self.currentUser = user
+                            logger.debug("user: \(user.username)")
+                            self.loaded = true
+                        }
+                    } else {
+                        print(String(data: data, encoding: .utf8))
+                        logger.error("status code: \(res.http?.statusCode ?? 0)")
+                        if let http = res.http, http.statusCode == 401 {
+                            UserDefaults.standard.set(false, forKey: "accountCreated")
+                            UserDefaults.standard.set(false, forKey: "accountSetup")
+                            UserDefaults.standard.set(false, forKey: "completedOnboarding")
+                        }
                     }
                 }
             } catch {
@@ -66,41 +69,46 @@ class FIRManager {
         }
     }
     
-//    func pauseSong() async {
-//        await musicService.pauseSong()
-//        try? await self.syncManager.pauseSong()
-//    }
-//    
-//    func playSong() async {
-//        if let connectedGroup = connectedGroup, let currentlyPlaying = connectedGroup.currentlyPlaying {
-//            await musicService.playSong(song: currentlyPlaying)
-//            try? await self.syncManager.playSong()
-//        }
-//    }
-//    
-//    func nextSong() async {
-//        await musicService.nextSong()
-//        try? await self.syncManager.nextSong()
-//    }
-//
-//    func createGroup(_ group: SQGroup) async -> Bool {
-//        var userRequest = URLRequest(url: URL(string: "\(baseURL)/groups/create")!)
-//        userRequest.httpMethod = "POST"
-//        userRequest.setValue("Bearer \(authToken ?? "unauth'd")", forHTTPHeaderField: "Authorization")
-//        print(userRequest.allHTTPHeaderFields)
-//        userRequest.httpBody = try! JSONEncoder().encode(group)
-//        do {
-//            let (data, res) = try await URLSession.shared.data(for: userRequest)
-//            if let http = res.http {
-//                await self.refreshData()
-//                return 200...299 ~= http.statusCode
-//            }
-//            
-//        } catch {
-//            print(error)
-//        }
-//        return false
-//    }
+    func pauseSong() async {
+        await musicService.pauseSong()
+        try? await self.syncManager.pauseSong()
+        self.connectedGroup?.playbackState?.state = .pause
+    }
+    
+    func playSong() async {
+        if let connectedGroup = connectedGroup, let currentlyPlaying = connectedGroup.currentlyPlaying {
+            await musicService.playSong(song: currentlyPlaying)
+            try? await self.syncManager.playSong()
+            self.connectedGroup?.playbackState?.state = .play
+        }
+    }
+    
+    func nextSong() async {
+        await musicService.nextSong()
+        try? await self.syncManager.nextSong()
+    }
+
+    func createGroup(_ group: SQGroup) async -> Bool {
+        logger.debug("createGroup: \(group.name)")
+        var userRequest = URLRequest(url: URL(string: "\(baseURL)/groups/create")!)
+        userRequest.httpMethod = "POST"
+        userRequest.setValue("Bearer \(authToken ?? "unauth'd")", forHTTPHeaderField: "Authorization")
+        print(userRequest.allHTTPHeaderFields)
+        userRequest.httpBody = try! JSONEncoder().encode(group)
+        do {
+            let (data, res) = try await URLSession.shared.data(for: userRequest)
+            if let http = res.http {
+                await self.refreshData()
+                logger.debug("createGroup: \(http.statusCode)")
+                let range =  200...299
+                return range.contains(http.statusCode)
+            }
+            
+        } catch {
+            logger.error("error w/ createGroup: \(error)")
+        }
+        return false
+    }
     
     func signUp(username: String, email: String, password: String) async -> SQSignUpResponse {
         var userRequest = URLRequest(url: URL(string: "\(baseURL)/users/signup")!)
@@ -226,92 +234,94 @@ class FIRManager {
     }
 }
 
-//extension FIRManager: SharedQSyncDelegate {
-//    func onDisconnect() {
-//        Task {
-//            await musicService.stopPlayback()
-//        }
-//        connectedToGroup = false
-//    }
-//
-//    func onGroupConnect(_ group: SQGroup) {
-//        connectedToGroup = true
+var musicService = BasicMusicService()
+
+extension FIRManager: SharedQSyncDelegate {
+    func onDisconnect() {
+        Task {
+            await musicService.stopPlayback()
+        }
+        connectedToGroup = false
+    }
+
+    func onGroupConnect(_ group: SQGroup) {
+        logger.log(level: OSLogType.debug, "connected to \(group.name)")
+        connectedToGroup = true
+        self.connectedGroup = group
+        Task {
+            await musicService.playSong(song: connectedGroup!.currentlyPlaying!)
+        }
+    }
+
+    func onGroupUpdate(_ group: SQGroup, _ message: WSMessage) {
+        print("group update")
 //        self.connectedGroup = group
-//        Task {
-//            await musicService.playSong(song: connectedGroup!.currentlyPlaying!)
-//        }
-//    }
-//
-//    func onGroupUpdate(_ group: SQGroup, _ message: WSMessage) {
-//        print("group update")
-////        self.connectedGroup = group
-//        DispatchQueue.main.async {
-//            self.objectWillChange.send()
-//            self.connectedGroup = group
-//        }
-//        if group.playbackState!.state == .pause {
-//            Task {
-//                await musicService.pauseSong()
-//            }
-//        }
-//        Task {
-//            var queue = [SQSong]()
-//            for item in group.previewQueue {
-//                queue.append(item.song)
-//            }
-//            await musicService.addQueue(queue: queue)
-//        }
-//    }
-//
-//    func onNextSong(_ message: WSMessage) {
-//        Task {
-//            await musicService.playSong(song: connectedGroup!.currentlyPlaying!)
-//            var delay = Date().timeIntervalSince(message.sentAt)
-//            await musicService.playAt(timestamp: delay)
-//        }
-//    }
-//
-//    func onPrevSong(_ message: WSMessage) {
-//        Task {
-//            await musicService.prevSong()
-//        }
-//    }
-//
-//    func onPlay(_ message: WSMessage) {
-//        Task {
-//            await musicService.playSong(song: connectedGroup!.currentlyPlaying!)
-//            await musicService.playAt(timestamp: connectedGroup!.playbackState!.timestamp)
-//        }
-//        self.connectedGroup!.playbackState?.state = .play
-//    }
-//
-//    func onPause(_ message: WSMessage) {
-//        print("paused at \(message.sentAt)")
-//        Task {
-//            await musicService.pauseSong()
-//        }
-//        self.connectedGroup!.playbackState?.state = .pause
-//    }
-//
-//    func onTimestampUpdate(_ timestamp: TimeInterval, _ message: WSMessage) {
-//        Task {
-//            var delay = Date().timeIntervalSince(message.sentAt)
-//            print(delay)
-//            var timestampDelay = await musicService.getSongTimestamp() - (timestamp + delay)
-//            print(timestampDelay)
-//            if !(timestampDelay <= 1 && timestampDelay >= -1) {
-//                print(timestamp)
-//                await musicService.playAt(timestamp: timestamp + delay)
-//            }
-//        }
-//    }
-//
-//    func onSeekTo(_ timestamp: TimeInterval, _ message: WSMessage) {
-//        Task {
-//            await musicService.seekTo(timestamp: timestamp)
-//        }
-//    }
-//}
+        DispatchQueue.main.async {
+            self.connectedGroup = group
+        }
+        if group.playbackState!.state == .pause {
+            Task {
+                await musicService.pauseSong()
+            }
+        }
+        Task {
+            var queue = [SQSong]()
+            for item in group.previewQueue {
+                queue.append(item.song)
+            }
+            await musicService.addQueue(queue: queue)
+        }
+    }
+
+    func onNextSong(_ message: WSMessage) {
+        Task {
+            await musicService.playSong(song: connectedGroup!.currentlyPlaying!)
+            var delay = Date().timeIntervalSince(message.sentAt)
+            await musicService.playAt(timestamp: delay)
+        }
+    }
+
+    func onPrevSong(_ message: WSMessage) {
+        Task {
+            await musicService.prevSong()
+        }
+    }
+
+    func onPlay(_ message: WSMessage) {
+        Task {
+            await musicService.playSong(song: connectedGroup!.currentlyPlaying!)
+            await musicService.playAt(timestamp: connectedGroup!.playbackState!.timestamp)
+        }
+        self.connectedGroup!.playbackState?.state = .play
+    }
+
+    func onPause(_ message: WSMessage) {
+        print("paused at \(message.sentAt)")
+        Task {
+            await musicService.pauseSong()
+        }
+        self.connectedGroup!.playbackState?.state = .pause
+    }
+
+    func onTimestampUpdate(_ timestamp: TimeInterval, _ message: WSMessage) {
+        Task {
+            var delay = Date().timeIntervalSince(message.sentAt)
+            print(delay)
+            var timestampDelay = await musicService.getSongTimestamp() - (timestamp + delay)
+            print(timestampDelay)
+            if !(timestampDelay <= 1 && timestampDelay >= -1) {
+                print(timestamp)
+                await musicService.playAt(timestamp: timestamp + delay)
+            }
+        }
+    }
+
+    func onSeekTo(_ timestamp: TimeInterval, _ message: WSMessage) {
+        Task {
+            await musicService.seekTo(timestamp: timestamp)
+        }
+    }
+}
 
 enum ServerID: String {
     case superDev = "192.168.68.121:8080"

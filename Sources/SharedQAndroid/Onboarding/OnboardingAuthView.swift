@@ -24,10 +24,16 @@ struct OnboardingAuthView: View {
         NavigationStack(path: $navPath) {
             ZStack {
                 VStack {
-                    Text(verbatim: "Welcome to SharedQ").font(.system(.largeTitle)).fontWeight(.bold)
-                    
-                    Text("create a shared music queue no matter what streaming service you use").multilineTextAlignment(.center)
-                    Spacer()
+                    VStack {
+                        Text(verbatim: "Welcome to SharedQ").font(.system(.largeTitle)).fontWeight(.bold)
+                        
+                        Text("create a shared music queue no matter what streaming service you use").multilineTextAlignment(.center)
+                        Spacer()
+                    }.onTapGesture {
+                        withAnimation(.spring) {
+                            currentView = .none
+                        }
+                    }
                     ZStack {
                         switch currentView {
                         case .none:
@@ -203,7 +209,7 @@ struct LoginView: View {
                             ProgressView()
                         }
                     }
-                }).frame(height: 60).disabled(loading)
+                }).frame(height: 60).disabled(loading) 
             }.padding(20)
         }
     }

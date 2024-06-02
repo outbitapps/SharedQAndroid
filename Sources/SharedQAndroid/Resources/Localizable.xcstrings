@@ -1,6 +1,35 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%lld listening ∙ %@ Group" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld listening ∙ %2$@ Group"
+          }
+        }
+      }
+    },
+    "%lld Members ∙ %lld right now" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld Members ∙ %2$lld right now"
+          }
+        }
+      }
+    },
+    "||" : {
+
+    },
+    "a group is a shared queue. you can make any type of group you want! anywhere from a massive, public group with hundreds of people at a time to a smaller, private group with a couple friends or some family. you can customize it however you’d like!" : {
+
+    },
+    "Added by %@" : {
+
+    },
     "Appearance" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -33,7 +62,25 @@
     "Apple Music" : {
 
     },
+    "Are you sure you want to join?" : {
+
+    },
+    "Ask to Join" : {
+
+    },
+    "Cancel" : {
+
+    },
+    "Create a Group" : {
+
+    },
     "create a shared music queue no matter what streaming service you use" : {
+
+    },
+    "Create Group" : {
+
+    },
+    "CURRENTLY PLAYING" : {
 
     },
     "Dark" : {
@@ -65,13 +112,25 @@
         }
       }
     },
+    "Default Permissions" : {
+
+    },
     "email" : {
 
     },
     "email..." : {
 
     },
+    "everybody currently in \"%@\" will be able to see that you joined, and will be able to see your profile. if you would like to know who is currently listening in this group, press “View Queue” (nobody will know that you’re viewing the queue). once you join, the music in the queue will start playing immediately." : {
+
+    },
     "Final Notes" : {
+
+    },
+    "group name" : {
+
+    },
+    "Groups" : {
 
     },
     "Hello %@!" : {
@@ -132,6 +191,12 @@
         }
       }
     },
+    "In a public group, the group is visible to anyone and can be joined by anyone. Best for large communities" : {
+
+    },
+    "is currently listening to" : {
+
+    },
     "It's fucked, sorry!" : {
 
     },
@@ -160,6 +225,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "项目 %lld"
+          }
+        }
+      }
+    },
+    "Join" : {
+
+    },
+    "Join %@?" : {
+
+    },
+    "Last used %@ ∙ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Last used %1$@ ∙ %2$@"
           }
         }
       }
@@ -196,7 +277,19 @@
         }
       }
     },
+    "Loading..." : {
+
+    },
     "Log In" : {
+
+    },
+    "Members (%lld):" : {
+
+    },
+    "Members can add to queue" : {
+
+    },
+    "Members can control playback" : {
 
     },
     "Music Service" : {
@@ -231,10 +324,19 @@
         }
       }
     },
+    "No songs in queue!" : {
+
+    },
     "password" : {
 
     },
     "password..." : {
+
+    },
+    "Placeholder cover art" : {
+
+    },
+    "Placeholder Cover Art" : {
 
     },
     "Powered by %@" : {
@@ -265,6 +367,9 @@
           }
         }
       }
+    },
+    "Public Group" : {
+
     },
     "Screen %lld" : {
       "extractionState" : "stale",
@@ -324,9 +429,6 @@
         }
       }
     },
-    "sharedq %@" : {
-
-    },
     "Sign Up" : {
 
     },
@@ -362,10 +464,16 @@
         }
       }
     },
+    "these options can be changed at any time via Admin Settings." : {
+
+    },
     "username" : {
 
     },
     "username..." : {
+
+    },
+    "View Queue" : {
 
     },
     "Welcome" : {
@@ -398,6 +506,9 @@
       }
     },
     "Welcome to SharedQ" : {
+
+    },
+    "With Ask to Join, your permission is needed before anyone can join. Best for small groups. (not functional in the beta)" : {
 
     },
     "you're ready to use SharedQ, a shared music queue which works regardless of what streaming service you use. but first, here's how SharedQ works:" : {
