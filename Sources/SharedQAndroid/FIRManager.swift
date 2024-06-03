@@ -57,7 +57,7 @@ class FIRManager {
                         if let http = res.http, http.statusCode == 401 {
                             UserDefaults.standard.set(false, forKey: "accountCreated")
                             UserDefaults.standard.set(false, forKey: "accountSetup")
-                            UserDefaults.standard.set(false, forKey: "completedOnboarding")
+                            UserDefaults.standard.set(true, forKey: "needsOnboarding")
                         }
                     }
                 }

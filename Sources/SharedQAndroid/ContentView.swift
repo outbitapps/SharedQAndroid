@@ -10,6 +10,7 @@ public struct ContentView: View {
     @State var loading = false
     @State var showingCreatedView = false
     @State var showGroupConnectedView = false
+    @State var showingSettingsSheet = false
     public init() {
     }
 
@@ -40,11 +41,14 @@ public struct ContentView: View {
                         firManager.refreshData()
                     }, label: {
                         Image(systemName: "arrow.clockwise.circle")
-                    }).buttonStyle(.bordered).disabled(!firManager.loaded).opacity(!firManager.loaded ? 0.5 : 1.0).overlay {
-                        if !firManager.loaded {
-                            ProgressView()
-                        }
-                    }
+                    }).buttonStyle(.bordered).disabled(!firManager.loaded).opacity(!firManager.loaded ? 0.5 : 1.0)
+                }
+                ToolbarItem {
+                    Button(action: {
+                        showingSettingsSheet = true
+                    }, label: {
+                        Image(systemName: "gear")
+                    }).buttonStyle(.bordered)
                 }
             })
         }.opacity(loading ? 0.5 : 1.0).overlay(content: {
@@ -80,7 +84,9 @@ public struct ContentView: View {
         }).onChange(of: firManager.connectedToGroup) { oldValue, newValue in
             logger.log(level: .debug, "connectedToGroup: \(newValue)")
             showGroupConnectedView = newValue
-        }
+        }.sheet(isPresented: $showingSettingsSheet, content: {
+            DevSettings()
+        })
     }
 }
 
@@ -126,8 +132,61 @@ struct HomeGroupCell: View {
     }
 }
 
-enum Tab: String, Hashable {
-    case welcome, home, settings
+struct DevSettings: View {
+    @Environment(FIRManager.self) var firManager
+    @State var env: ServerID = .beta
+    @State var serverVersion: String?
+    var body: some View {
+        NavigationStack {
+            VStack {
+                List {
+                    Picker("Server env", selection: $env) {
+                        Text("Dev").tag(ServerID.superDev)
+                        Text("\"prod\"").tag(ServerID.beta)
+                    }
+                    if let serverVersion = serverVersion {
+                        HStack {
+                            Text("Server Version")
+                            Spacer()
+                            Text(serverVersion).foregroundStyle(.secondary)
+                        }
+                    } else {
+                        HStack {
+                            Text("Server Version")
+                            Spacer()
+                            ProgressView()
+                        }
+                    }
+                }.navigationTitle("Dev Settings").frame(maxHeight: .infinity)
+                
+            }.onChange(of: env) { oldValue, newValue in
+                firManager.env = newValue
+                firManager.baseURL = "http://\(firManager.env.rawValue)"
+                firManager.baseWSURL = "ws://\(firManager.env.rawValue)"
+                firManager.syncManager.serverURL = URL(string: firManager.baseURL)!
+                firManager.syncManager.websocketURL = URL(string: firManager.baseWSURL)!
+                print(firManager.baseURL)
+                Task {
+                    self.serverVersion = await fetchServerVersion()
+                    firManager.refreshData()
+                }
+            }.onAppear(perform: {
+                env = firManager.env
+                Task {
+                    self.serverVersion = await fetchServerVersion()
+                }
+            })
+        }
+    }
+    func fetchServerVersion() async -> String? {
+        do {
+            let (data, _) = try await URLSession.shared.data(from: URL(string: "\(firManager.baseURL)/server-version")!)
+            return String(data: data, encoding: .utf8)
+        } catch {
+            print("error getting server info: \(error)")
+        }
+        return nil
+    }
 }
 
 #Preview {
@@ -221,3 +280,4 @@ struct CreateGroupView: View {
         }
     }
 }
+
