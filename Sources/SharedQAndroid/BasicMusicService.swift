@@ -10,7 +10,7 @@ import Foundation
 import SharedQProtocol
 
 extension SQSong {
-    static var testSongs = [SQSong(title: "Test Song", artist: "Basic Artist", albumArt: URL(string: "https://glassnotemusic.com/wp-content/uploads/2018/03/CHVRCHES_ALBUM_COVER_1.10.18.jpg"), colors: ["#a83244", "#a8329b"], textColor: "#FFFFFF", duration: 120), SQSong(title: "California", artist: "CHVRCHES", albumArt: URL(string: "https://i.discogs.com/SXn0SqimPLQGSJbZK88oEwg4PPB5AOi6XpPfswY5ZMo/rs:fit/g:sm/q:90/h:600/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTIwNzkz/MTk5LTE2MzU2NTIw/MTctMTg1Ny5qcGVn.jpeg"), colors: ["#a83244", "#a8329b"], textColor: "#FFFFFF", duration: 120)]
+    static var testSongs = [SQSong(title: "California", artist: "CHVRCHES", albumArt: URL(string: "https://i.discogs.com/SXn0SqimPLQGSJbZK88oEwg4PPB5AOi6XpPfswY5ZMo/rs:fit/g:sm/q:90/h:600/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTIwNzkz/MTk5LTE2MzU2NTIw/MTctMTg1Ny5qcGVn.jpeg"), colors: ["#a83244", "#a8329b"], textColor: "#FFFFFF", duration: 120)]
 }
 
 class BasicMusicService: MusicService {

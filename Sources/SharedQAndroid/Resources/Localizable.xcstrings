@@ -21,6 +21,9 @@
         }
       }
     },
+    "+ Add to queue" : {
+
+    },
     "||" : {
 
     },
@@ -245,6 +248,9 @@
         }
       }
     },
+    "Leave" : {
+
+    },
     "Let's do this!" : {
 
     },
@@ -368,6 +374,9 @@
     "Public Group" : {
 
     },
+    "Recently Played" : {
+
+    },
     "Screen %lld" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -396,6 +405,12 @@
           }
         }
       }
+    },
+    "Search a song..." : {
+
+    },
+    "Search Results" : {
+
     },
     "Settings" : {
       "extractionState" : "stale",

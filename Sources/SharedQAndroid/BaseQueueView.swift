@@ -25,7 +25,7 @@ struct BaseQueueView: View {
                         Text(item.song.artist).opacity(0.5).font(.title3)
                     }
                     Spacer()
-                    Text("Added by \(item.addedBy)").opacity(0.5)
+                    Text("Added by \(item.addedBy)").font(.caption).opacity(0.5)
                 }
             }
             if group.previewQueue.isEmpty {
