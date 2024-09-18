@@ -131,11 +131,18 @@ struct HomeGroupCell: View {
         }
     }
 }
+#if SKIP
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import android.content.Context
+import android.content.Intent
+#endif
 
 struct DevSettings: View {
     @Environment(FIRManager.self) var firManager
     @State var env: ServerID = .beta
     @State var serverVersion: String?
+    @State var gotResult = false
     var body: some View {
         NavigationStack {
             VStack {
@@ -157,6 +164,21 @@ struct DevSettings: View {
                             ProgressView()
                         }
                     }
+                    #if SKIP
+                    
+                    ComposeView { ctx in
+                        Button(action: {
+                            var appleResultLauncher: ActivityResultLauncher<Intent> = registerForActivityResult(
+                                    ActivityResultContracts.StartActivityForResult()
+                                ) { _ in
+                                    gotResult = true
+                                } as ActivityResultLauncher<Intent>
+                        }, label: {
+                            Text("Open AM Auth")
+                        }).Compose(ctx)
+                    }
+                    Text("\(gotResult)")
+                    #endif
                 }.navigationTitle("Dev Settings").frame(maxHeight: .infinity)
                 
             }.onChange(of: env) { oldValue, newValue in

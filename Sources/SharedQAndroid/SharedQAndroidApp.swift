@@ -12,6 +12,9 @@ let androidSDK = ProcessInfo.processInfo.environment["android.os.Build.VERSION.S
 /// The default implementation merely loads the `ContentView` for the app and logs a message.
 public struct RootView : View {
     public init() {
+        #if SKIP
+        AMManager.shared
+        #endif
     }
 
     public var body: some View {

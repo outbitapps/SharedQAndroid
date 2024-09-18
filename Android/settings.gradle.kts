@@ -39,3 +39,4 @@ plugins {
     id("skip-plugin") apply true
 }
 
+include(":app", ":spotify-app-remote")

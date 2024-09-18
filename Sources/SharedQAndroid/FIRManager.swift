@@ -324,7 +324,7 @@ extension FIRManager: SharedQSyncDelegate {
 }
 
 enum ServerID: String {
-    case superDev = "192.168.68.121:8080"
+    case superDev = "192.168.68.112:8080"
     case beta = "sq.paytondev.cloud:8080"
 }
 
