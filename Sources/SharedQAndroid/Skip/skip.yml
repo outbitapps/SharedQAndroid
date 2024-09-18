@@ -1,5 +1,0 @@
-build:
-  contents:
-    - block: 'dependencies'
-      contents:
-        - 'implementation(files("/Users/paytondev/Documents/sharedq-skip/Android/spotify-app-remote/spotify-app-remote.aar", "/Users/paytondev/Documents/sharedq-skip/Android/apple-music/auth.aar", "/Users/paytondev/Documents/sharedq-skip/Android/apple-music/playback.aar"))'
