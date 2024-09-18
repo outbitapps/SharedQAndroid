@@ -1,5 +1,6 @@
 package com.paytondeveloper.sharedqandroid.views
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
@@ -65,6 +66,9 @@ fun EmailAuthComponent(modifier: Modifier = Modifier) {
         .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(16.dp))
         .animateContentSize()
         .height(if (viewState != EmailAuthView.none) 400.dp else 60.dp)) {
+        BackHandler(enabled = viewState != EmailAuthView.none) {
+            viewState = EmailAuthView.none
+        }
         AnimatedContent(viewState) { state ->
             when (state) {
                 EmailAuthView.none -> {
