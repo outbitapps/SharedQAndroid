@@ -28,13 +28,22 @@ data class SQGroup(
 @Serializable
 data class SQPlaybackState(
     val id: String = UUID.randomUUID().toString(),
-    val state: PlayPauseState,
+    val state: Int,
     val timestamp: Double
 )
 
 @Serializable
 enum class PlayPauseState {
-    PLAY, PAUSE
+    PLAY, PAUSE;
+    companion object {
+        fun fromInt(int: Int): PlayPauseState {
+            if (int == 0) {
+                return PLAY
+            } else {
+                return PAUSE
+            }
+        }
+    }
 }
 @Serializable
 data class SQSong(
@@ -103,25 +112,38 @@ data class JoinGroupRequest(
 
 @Serializable
 data class WSMessage(
-    val type: WSMessageType,
-    val data: ByteArray, // Consider a more specific type if possible
-    @Serializable(DateSerializer::class)
-    val sentAt: Date
+    val type: Int,
+    val data: String, // Consider a more specific type if possible
+    val sentAt: Double
 )
 @Serializable
 enum class WSMessageType {
-    GROUP_UPDATE, NEXT_SONG, GO_BACK, PLAY, PAUSE, TIMESTAMP_UPDATE, PLAYBACK_STARTED, SEEK_TO, ADD_TO_QUEUE
+    GROUP_UPDATE, NEXT_SONG, GO_BACK, PLAY, PAUSE, TIMESTAMP_UPDATE, PLAYBACK_STARTED, SEEK_TO, ADD_TO_QUEUE, UNKNOWN;
+    companion object  {
+        fun fromInt(int: Int): WSMessageType {
+            return when (int) {
+                0 -> WSMessageType.GROUP_UPDATE
+                1 -> WSMessageType.NEXT_SONG
+                2 -> WSMessageType.GO_BACK
+                3 -> WSMessageType.PLAY
+                4 -> WSMessageType.PAUSE
+                5 -> WSMessageType.TIMESTAMP_UPDATE
+                6 -> WSMessageType.PLAYBACK_STARTED
+                7 -> WSMessageType.SEEK_TO
+                8 -> WSMessageType.ADD_TO_QUEUE
+                else -> WSMessageType.UNKNOWN
+            }
+        }
+    }
 }
 @Serializable
 data class WSPlaybackStartedMessage(
-    @Serializable(DateSerializer::class)
-    val startedAt: Date
+    val startedAt: Double
 )
 @Serializable
 data class WSTimestampUpdate(
     val timestamp: Double,
-    @Serializable(DateSerializer::class)
-    val sentAt: Date
+    val sentAt: Double
 )
 @Serializable
 data class FetchUserRequest(

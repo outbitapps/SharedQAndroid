@@ -1,5 +1,6 @@
 package com.paytondeveloper.sharedqandroid.views.Group
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -24,8 +25,10 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.paytondeveloper.sharedqandroid.AppInfo
 import com.paytondeveloper.sharedqandroid.Main
 import com.paytondeveloper.sharedqandroid.protocol.SQGroup
+import com.paytondeveloper.sharedqandroid.sync.SQManager
 import com.paytondeveloper.sharedqandroid.views.components.SongImage
 
 
@@ -45,7 +48,10 @@ fun JoinGroupView(nav: NavController, group: SQGroup) {
             Spacer(modifier = Modifier.height(24.dp))
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row {
-                    Button(modifier = Modifier.fillMaxWidth(0.5f).padding(2.dp).height(70.dp), shape = RoundedCornerShape(12.dp),onClick = {}) {
+                    Button(modifier = Modifier.fillMaxWidth(0.5f).padding(2.dp).height(70.dp), shape = RoundedCornerShape(12.dp),onClick = {
+                        var prefs = AppInfo.application.getSharedPreferences("auth", Context.MODE_PRIVATE)
+                        SQManager.shared.syncManager.connectToGroup(group, prefs.getString("token", "nothing")!!)
+                    }) {
                         Text("Join")
                     }
                     Button(modifier = Modifier.fillMaxWidth().padding(2.dp).height(70.dp), shape = RoundedCornerShape(12.dp),onClick = {

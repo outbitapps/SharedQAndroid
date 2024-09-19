@@ -4,10 +4,11 @@ import android.app.Application
 import android.content.Context
 import android.util.Log
 import okhttp3.OkHttpClient
+import java.util.concurrent.TimeUnit
 
 object AppInfo {
     lateinit var application: Application
-    var httpClient = OkHttpClient.Builder().cache(null).build()
+    var httpClient = OkHttpClient.Builder().cache(null).readTimeout(0, TimeUnit.MILLISECONDS).build()
     val onboardingPage: OnboardingPage
         get() {
             var prefs = application.getSharedPreferences("onboarding", Context.MODE_PRIVATE)

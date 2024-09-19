@@ -12,6 +12,7 @@ import com.paytondeveloper.sharedqandroid.protocol.NewSession
 import com.paytondeveloper.sharedqandroid.protocol.SQGroup
 import com.paytondeveloper.sharedqandroid.protocol.SQUser
 import com.paytondeveloper.sharedqandroid.protocol.UserSignup
+import com.paytondeveloper.sharedqandroid.protocol.WSMessage
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,11 +32,13 @@ import java.io.ByteArrayOutputStream
 import java.io.OutputStream
 
 //FIRManager on Apple platforms
-class SQManager(env: ServerID = ServerID.superDev) : ViewModel() {
+class SQManager(env: ServerID = ServerID.superDev) : ViewModel(), SyncDelegate {
     private val _uiState = MutableStateFlow(SQManagerUIState())
     val uiState: StateFlow<SQManagerUIState> = _uiState.asStateFlow()
     private val json = Json { ignoreUnknownKeys = true; encodeDefaults = true }
+    var syncManager: SyncManager
     init {
+
         _uiState.update {
             _uiState.value.copy(
                 env = env,
@@ -43,6 +46,8 @@ class SQManager(env: ServerID = ServerID.superDev) : ViewModel() {
                 baseWSURL = "ws://${env.url}"
             )
         }
+        syncManager = SyncManager(_uiState.value.baseURL, _uiState.value.baseWSURL)
+        syncManager.delegate = this
         var prefs = AppInfo.application.getSharedPreferences("auth", Context.MODE_PRIVATE)
         _uiState.update {
             _uiState.value.copy(
@@ -196,6 +201,42 @@ class SQManager(env: ServerID = ServerID.superDev) : ViewModel() {
     companion object {
         var shared = SQManager()
     }
+
+    override fun onGroupConnect(group: SQGroup) {
+        Log.d("sqmanager", "ongroupconnect")
+    }
+
+    override fun onGroupUpdate(group: SQGroup, message: WSMessage) {
+        Log.d("sqmanager", "ongroupupdate")
+    }
+
+    override fun onNextSong(message: WSMessage) {
+        Log.d("sqmanager", "onnextsong")
+    }
+
+    override fun onPrevSong(message: WSMessage) {
+        Log.d("sqmanager", "onprevsong")
+    }
+
+    override fun onPlay(message: WSMessage) {
+        Log.d("sqmanager", "onplay")
+    }
+
+    override fun onPause(message: WSMessage) {
+        Log.d("sqmanager", "onpause")
+    }
+
+    override fun onTimestampUpdate(timestamp: Double, message: WSMessage) {
+        Log.d("sqmanager", "ontimestampupdate ${timestamp}")
+    }
+
+    override fun onSeekTo(timestamp: Double, message: WSMessage) {
+        Log.d("sqmanager", "onseekto ${timestamp}")
+    }
+
+    override fun onDisconnect() {
+        Log.d("sqmanager", "ondisconnect")
+    }
 }
 
 fun Request.Builder.bearer(token: String?): Request.Builder {
@@ -208,7 +249,6 @@ data class SQManagerUIState(
     var connectedToGroup: Boolean = false,
     var loaded: Boolean = false,
     var authToken: String? = null,
-    var syncManager: String = ""/*replace with SQSM*/,
     var setupQueue: Boolean = false,
     var env: ServerID = ServerID.beta,
     var baseURL: String = "",
