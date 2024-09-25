@@ -61,6 +61,7 @@ lateinit var appleResultLauncher: ActivityResultLauncher<Intent>
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         appleResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             Log.d("result", result.toString())
             result.data?.let {
@@ -73,7 +74,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        System.loadLibrary("c++_shared")
+        System.loadLibrary("appleMusicSDK")
         AppInfo.application = application
+        AppleMusicService.shared
         SQManager.shared
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

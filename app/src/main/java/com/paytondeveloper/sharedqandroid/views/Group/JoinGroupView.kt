@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.paytondeveloper.sharedqandroid.AppInfo
 import com.paytondeveloper.sharedqandroid.Main
+import com.paytondeveloper.sharedqandroid.musicservices.AppleMusicService
 import com.paytondeveloper.sharedqandroid.protocol.SQGroup
 import com.paytondeveloper.sharedqandroid.sync.SQManager
 import com.paytondeveloper.sharedqandroid.views.components.SongImage

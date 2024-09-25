@@ -73,9 +73,12 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     val appcompat_version = "1.7.0"
 
-    implementation("androidx.appcompat:appcompat:$appcompat_version")
+    implementation(libs.androidx.appcompat)
     // For loading and tinting drawables on older versions of the platform
-    implementation("androidx.appcompat:appcompat-resources:$appcompat_version")
+    implementation(libs.androidx.appcompat.resources)
     implementation(files("libs/apple-auth.aar", "libs/apple-playback.aar"))
-    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation(libs.coil.compose)
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.exoplayer.dash)
+    implementation(libs.androidx.media3.ui)
 }

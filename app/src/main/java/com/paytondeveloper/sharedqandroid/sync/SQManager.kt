@@ -7,12 +7,14 @@ import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.paytondeveloper.sharedqandroid.AppInfo
+import com.paytondeveloper.sharedqandroid.musicservices.AppleMusicService
 import com.paytondeveloper.sharedqandroid.protocol.AddGroupRequest
 import com.paytondeveloper.sharedqandroid.protocol.NewSession
 import com.paytondeveloper.sharedqandroid.protocol.SQGroup
 import com.paytondeveloper.sharedqandroid.protocol.SQUser
 import com.paytondeveloper.sharedqandroid.protocol.UserSignup
 import com.paytondeveloper.sharedqandroid.protocol.WSMessage
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -202,8 +204,14 @@ class SQManager(env: ServerID = ServerID.superDev) : ViewModel(), SyncDelegate {
         var shared = SQManager()
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onGroupConnect(group: SQGroup) {
         Log.d("sqmanager", "ongroupconnect")
+        group.currentlyPlaying?.let {
+            GlobalScope.launch {
+                AppleMusicService.shared.playSong(it)
+            }
+        }
     }
 
     override fun onGroupUpdate(group: SQGroup, message: WSMessage) {

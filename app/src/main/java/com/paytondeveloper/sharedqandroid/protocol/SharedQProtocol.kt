@@ -53,7 +53,8 @@ data class SQSong(
     val albumArt: String? = null,
     val colors: List<String> = emptyList(),
     val textColor: String? = null,
-    val duration: Double
+    val duration: Double,
+    val isrc: String
 )
 
 @Serializable
