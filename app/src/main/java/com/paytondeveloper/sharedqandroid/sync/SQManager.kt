@@ -10,6 +10,7 @@ import com.paytondeveloper.sharedqandroid.AppInfo
 import com.paytondeveloper.sharedqandroid.musicservices.AppleMusicService
 import com.paytondeveloper.sharedqandroid.protocol.AddGroupRequest
 import com.paytondeveloper.sharedqandroid.protocol.NewSession
+import com.paytondeveloper.sharedqandroid.protocol.PlayPauseState
 import com.paytondeveloper.sharedqandroid.protocol.SQGroup
 import com.paytondeveloper.sharedqandroid.protocol.SQUser
 import com.paytondeveloper.sharedqandroid.protocol.UserSignup
@@ -210,40 +211,93 @@ class SQManager(env: ServerID = ServerID.superDev) : ViewModel(), SyncDelegate {
         group.currentlyPlaying?.let {
             GlobalScope.launch {
                 AppleMusicService.shared.playSong(it)
+                for (items in group.previewQueue) {
+                    AppleMusicService.shared.addQueue(listOf(items.song))
+                }
+            }
+            _uiState.update {
+                _uiState.value.copy(
+                    connectedGroup = group
+                )
             }
         }
     }
 
     override fun onGroupUpdate(group: SQGroup, message: WSMessage) {
         Log.d("sqmanager", "ongroupupdate")
+        _uiState.update {
+            _uiState.value.copy(
+                connectedGroup = group
+            )
+        }
+        GlobalScope.launch {
+            AppleMusicService.shared.clearQueue()
+            for (items in group.previewQueue) {
+                AppleMusicService.shared.addQueue(listOf(items.song))
+            }
+        }
+
     }
 
     override fun onNextSong(message: WSMessage) {
         Log.d("sqmanager", "onnextsong")
+        GlobalScope.launch {
+            AppleMusicService.shared.nextSong()
+        }
     }
 
     override fun onPrevSong(message: WSMessage) {
         Log.d("sqmanager", "onprevsong")
+        GlobalScope.launch {
+            AppleMusicService.shared.prevSong()
+        }
     }
 
     override fun onPlay(message: WSMessage) {
-        Log.d("sqmanager", "onplay")
+        GlobalScope.launch {
+            AppleMusicService.shared.playSong(_uiState.value.connectedGroup!!.currentlyPlaying!!)
+        }
+        _uiState.update {
+            _uiState.value.copy(
+                connectedGroup = _uiState.value.connectedGroup!!.copy(playbackState = _uiState.value.connectedGroup!!.playbackState!!.copy(state = PlayPauseState.PLAY.ordinal))
+            )
+        }
     }
 
     override fun onPause(message: WSMessage) {
-        Log.d("sqmanager", "onpause")
+        GlobalScope.launch {
+            AppleMusicService.shared.pauseSong()
+        }
+        _uiState.update {
+            _uiState.value.copy(
+                connectedGroup = _uiState.value.connectedGroup!!.copy(playbackState = _uiState.value.connectedGroup!!.playbackState!!.copy(state = PlayPauseState.PAUSE.ordinal))
+            )
+        }
     }
 
     override fun onTimestampUpdate(timestamp: Double, message: WSMessage) {
-        Log.d("sqmanager", "ontimestampupdate ${timestamp}")
+        GlobalScope.launch {
+            var appleTimestamp = AppleMusicService.shared.getSongTimestamp()
+            Log.d("tsupdate", "from am: ${appleTimestamp} from server: ${timestamp}")
+//            if (((timestamp * 1000) - appleTimestamp) > 2000 || ((timestamp * 1000) - appleTimestamp) < 0) {
+                AppleMusicService.shared.seekTo(timestamp * 1000)
+//            }
+        }
     }
 
     override fun onSeekTo(timestamp: Double, message: WSMessage) {
-        Log.d("sqmanager", "onseekto ${timestamp}")
+        GlobalScope.launch {
+            var appleTimestamp = AppleMusicService.shared.getSongTimestamp()
+            AppleMusicService.shared.seekTo(timestamp * 1000)
+        }
     }
 
     override fun onDisconnect() {
-        Log.d("sqmanager", "ondisconnect")
+        _uiState.update {
+            _uiState.value.copy(
+                connectedGroup = null
+            )
+        }
     }
 }
 
@@ -264,7 +318,7 @@ data class SQManagerUIState(
 )
 
 enum class ServerID(val url: String) {
-    superDev("192.168.68.112:8080"),
+    superDev("192.168.68.147:8080"),
     beta("sq.paytondev.cloud:8080")
 }
 enum class SQSignUpResponse(val message: String) {

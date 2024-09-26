@@ -53,6 +53,7 @@ import com.paytondeveloper.sharedqandroid.views.Group.Components.BaseQueueView
 import com.paytondeveloper.sharedqandroid.views.Group.JoinGroupView
 import com.paytondeveloper.sharedqandroid.views.Onboarding.OnboardingMusicService
 import com.paytondeveloper.sharedqandroid.views.Onboarding.OnboardingWelcomeView
+import com.paytondeveloper.sharedqandroid.views.PlaybackView
 import com.paytondeveloper.sharedqandroid.views.components.SongImage
 
 
@@ -122,6 +123,9 @@ fun Main() {
             var group = viewModel.currentUser!!.groups.first { it.id == groupID }
             BaseQueueView(group.previewQueue)
         }
+    }
+    if (viewModel.connectedGroup != null) {
+        PlaybackView()
     }
 }
 

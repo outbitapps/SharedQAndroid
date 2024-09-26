@@ -13,14 +13,17 @@ import com.apple.android.music.playback.controller.MediaPlayerController
 import com.apple.android.music.playback.controller.MediaPlayerControllerFactory
 import com.apple.android.music.playback.model.MediaItemType
 import com.apple.android.music.playback.model.MediaPlayerException
+import com.apple.android.music.playback.model.PlaybackState
 import com.apple.android.music.playback.model.PlayerQueueItem
 import com.apple.android.music.playback.queue.CatalogPlaybackQueueItemProvider
+import com.apple.android.music.playback.queue.PlaybackQueueInsertionType
 import com.apple.android.sdk.authentication.AuthenticationFactory
 import com.apple.android.sdk.authentication.AuthenticationManager
 import com.apple.android.sdk.authentication.TokenProvider
 import com.apple.android.sdk.authentication.TokenResult
 import com.paytondeveloper.sharedqandroid.AppInfo
 import com.paytondeveloper.sharedqandroid.protocol.SQSong
+import com.paytondeveloper.sharedqandroid.sync.SQManager
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
@@ -162,35 +165,49 @@ class AppleMusicService: MusicService, Handler.Callback, TokenProvider, MediaPla
     }
 
     override suspend fun playAt(timestamp: Double) {
-        TODO("Not yet implemented")
+        playerController.seekToPosition(timestamp.toLong())
     }
 
     override suspend fun getSongTimestamp(): Double {
-        TODO("Not yet implemented")
+        val position = playerController.currentPosition
+        Log.d("tsupdate", position.toString())
+        return position.toDouble()
     }
 
+
     override suspend fun stopPlayback() {
-        TODO("Not yet implemented")
+        playerController.stop()
     }
 
     override suspend fun nextSong() {
-        TODO("Not yet implemented")
+        playerController.skipToNextItem()
+    }
+
+    override suspend fun clearQueue() {
+        for (item in playerController.queueItems) {
+            playerController.removeQueueItemWithId(item.playbackQueueId)
+        }
     }
 
     override suspend fun addQueue(queue: List<SQSong>) {
-        TODO("Not yet implemented")
+       for (song in queue) {
+           var musicId = getMusicIdFromSong(song)
+           val builder = CatalogPlaybackQueueItemProvider.Builder()
+           builder.items(MediaItemType.SONG, musicId)
+           playerController.addQueueItems(builder.build(), PlaybackQueueInsertionType.INSERTION_TYPE_AT_END)
+       }
     }
 
     override suspend fun pauseSong() {
-        TODO("Not yet implemented")
+        playerController.pause()
     }
 
     override suspend fun prevSong() {
-        TODO("Not yet implemented")
+        playerController.skipToPreviousItem()
     }
 
     override suspend fun seekTo(timestamp: Double) {
-        TODO("Not yet implemented")
+        playerController.seekToPosition(timestamp.toLong())
     }
 
     override suspend fun searchFor(query: String): List<SQSong>? {
@@ -198,7 +215,7 @@ class AppleMusicService: MusicService, Handler.Callback, TokenProvider, MediaPla
     }
 
     override suspend fun registerStateListeners() {
-        TODO("Not yet implemented")
+        playerController.addListener(this)
     }
 
     override fun getDeveloperToken(): String {
@@ -220,6 +237,21 @@ class AppleMusicService: MusicService, Handler.Callback, TokenProvider, MediaPla
 
     override fun onPlaybackStateChanged(p0: MediaPlayerController, p1: Int, p2: Int) {
 //        TODO("Not yet implemented")
+        when (p2) {
+            PlaybackState.PLAYING -> {
+                if (p1 == PlaybackState.PAUSED) {
+                    SQManager.shared.syncManager.playSong()
+                }
+            }
+            PlaybackState.PAUSED -> {
+                if (p1 == PlaybackState.PLAYING) {
+                    SQManager.shared.syncManager.pauseSong()
+                }
+            }
+            PlaybackState.STOPPED -> {
+//                SQManager.shared.syncManager.disconnect()
+            }
+        }
     }
 
     override fun onPlaybackStateUpdated(p0: MediaPlayerController) {

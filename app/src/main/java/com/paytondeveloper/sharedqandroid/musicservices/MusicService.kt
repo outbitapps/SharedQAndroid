@@ -16,4 +16,5 @@ interface MusicService {
     suspend fun seekTo(timestamp: Double)
     suspend fun searchFor(query: String): List<SQSong>?
     suspend fun registerStateListeners()
+    suspend fun clearQueue()
 }
