@@ -278,10 +278,15 @@ class SQManager(env: ServerID = ServerID.superDev) : ViewModel(), SyncDelegate {
     override fun onTimestampUpdate(timestamp: Double, message: WSMessage) {
         GlobalScope.launch {
             var appleTimestamp = AppleMusicService.shared.getSongTimestamp()
-            Log.d("tsupdate", "from am: ${appleTimestamp} from server: ${timestamp}")
-//            if (((timestamp * 1000) - appleTimestamp) > 2000 || ((timestamp * 1000) - appleTimestamp) < 0) {
+            Log.d("tsupdate", "from am: ${appleTimestamp} from server: ${timestamp * 1000} delta: ${((timestamp) - (appleTimestamp / 1000))}")
+            if (appleTimestamp == -1.0) {
+                syncManager.pauseSong()
+            } else {
+                syncManager.playSong()
+            }
+            if (((timestamp) - (appleTimestamp / 1000)) > 2000 || ((timestamp) - (appleTimestamp / 1000)) < 0) {
                 AppleMusicService.shared.seekTo(timestamp * 1000)
-//            }
+            }
         }
     }
 

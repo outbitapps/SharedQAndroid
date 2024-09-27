@@ -22,6 +22,7 @@ import com.apple.android.sdk.authentication.AuthenticationManager
 import com.apple.android.sdk.authentication.TokenProvider
 import com.apple.android.sdk.authentication.TokenResult
 import com.paytondeveloper.sharedqandroid.AppInfo
+import com.paytondeveloper.sharedqandroid.protocol.PlayPauseState
 import com.paytondeveloper.sharedqandroid.protocol.SQSong
 import com.paytondeveloper.sharedqandroid.sync.SQManager
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -260,6 +261,7 @@ class AppleMusicService: MusicService, Handler.Callback, TokenProvider, MediaPla
 
     override fun onBufferingStateChanged(p0: MediaPlayerController, p1: Boolean) {
 //        TODO("Not yet implemented")
+        Log.d("bufferingstate", p1.toString())
     }
 
     override fun onCurrentItemChanged(
@@ -290,7 +292,7 @@ class AppleMusicService: MusicService, Handler.Callback, TokenProvider, MediaPla
     }
 
     override fun onPlaybackError(p0: MediaPlayerController, p1: MediaPlayerException) {
-//        TODO("Not yet implemented")
+        Log.e("playbackerror", p1.toString())
     }
 
     override fun onPlaybackRepeatModeChanged(p0: MediaPlayerController, p1: Int) {

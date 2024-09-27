@@ -64,7 +64,6 @@ class SyncManager(serverURL: String, websocketURL: String): WebSocketListener() 
     override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
         super.onMessage(webSocket, bytes)
         this.webSocket = webSocket
-        try {
             Log.d("sync-onmessage", bytes.utf8())
             val message = json.decodeFromString<WSMessage>(bytes.utf8())
             val type = WSMessageType.fromInt(message.type)
@@ -111,9 +110,6 @@ class SyncManager(serverURL: String, websocketURL: String): WebSocketListener() 
                 }
                 else -> {}
             }
-        } catch (e: Exception) {
-            Log.e("sync-onmessage", "error with something ${e}")
-        }
     }
 
     fun pauseSong() {
