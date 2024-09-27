@@ -32,14 +32,25 @@ class SyncManager(serverURL: String, websocketURL: String): WebSocketListener() 
         this.serverURL = serverURL
         this.websocketURL = websocketURL
     }
-    fun connectToGroup(group: SQGroup, token: String) {
+    suspend fun connectToGroup(group: SQGroup, token: String) {
         Log.d("connectotgroup", websocketURL)
-        val socketURL = "${websocketURL}/groups/group/${group.id}/${token}"
-        val request = Request.Builder()
-            .url(socketURL)
+        val tokenURL = "${serverURL}/groups/getws/${group.id}"
+        val tokenRequest = Request.Builder()
+            .url(tokenURL)
+            .addHeader("Authorization", "Bearer ${token}")
             .build()
-        AppInfo.httpClient.newWebSocket(request, this)
-        this.group2 = group
+        val res = AppInfo.httpClient.newCall(tokenRequest).execute()
+        res.body?.let {
+            val wsToken = res.body!!.string()
+            Log.d("wstoken", wsToken)
+            val socketURL = "${websocketURL}/groups/connect/${wsToken}"
+            val request = Request.Builder()
+                .url(socketURL)
+                .build()
+            AppInfo.httpClient.newWebSocket(request, this)
+            this.group2 = group
+        }
+
     }
 
     override fun onOpen(webSocket: WebSocket, response: Response) {

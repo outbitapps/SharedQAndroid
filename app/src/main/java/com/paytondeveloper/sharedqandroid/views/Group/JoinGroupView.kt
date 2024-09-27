@@ -31,6 +31,8 @@ import com.paytondeveloper.sharedqandroid.musicservices.AppleMusicService
 import com.paytondeveloper.sharedqandroid.protocol.SQGroup
 import com.paytondeveloper.sharedqandroid.sync.SQManager
 import com.paytondeveloper.sharedqandroid.views.components.SongImage
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -51,7 +53,9 @@ fun JoinGroupView(nav: NavController, group: SQGroup) {
                 Row {
                     Button(modifier = Modifier.fillMaxWidth(0.5f).padding(2.dp).height(70.dp), shape = RoundedCornerShape(12.dp),onClick = {
                         var prefs = AppInfo.application.getSharedPreferences("auth", Context.MODE_PRIVATE)
-                        SQManager.shared.syncManager.connectToGroup(group, prefs.getString("token", "nothing")!!)
+                        GlobalScope.launch {
+                            SQManager.shared.syncManager.connectToGroup(group, prefs.getString("token", "nothing")!!)
+                        }
                     }) {
                         Text("Join")
                     }
