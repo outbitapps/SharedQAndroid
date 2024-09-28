@@ -20,7 +20,7 @@ import com.paytondeveloper.sharedqandroid.views.components.SongImage
 @Composable
 fun BaseQueueView(queue: List<SQQueueItem>) {
     Scaffold {
-        Column(modifier = Modifier.padding(it).fillMaxHeight().scrollable(rememberScrollState(), Orientation.Vertical)) {
+        Column(modifier = Modifier.padding(it).scrollable(rememberScrollState(), Orientation.Vertical)) {
             queue.forEach {
                 QueueItemView(item = it)
             }

@@ -279,12 +279,7 @@ class SQManager(env: ServerID = ServerID.superDev) : ViewModel(), SyncDelegate {
         GlobalScope.launch {
             var appleTimestamp = AppleMusicService.shared.getSongTimestamp()
             Log.d("tsupdate", "from am: ${appleTimestamp} from server: ${timestamp * 1000} delta: ${((timestamp) - (appleTimestamp / 1000))}")
-            if (appleTimestamp == -1.0) {
-                syncManager.pauseSong()
-            } else {
-                syncManager.playSong()
-            }
-            if (((timestamp) - (appleTimestamp / 1000)) > 2000 || ((timestamp) - (appleTimestamp / 1000)) < 0) {
+            if (((timestamp) - (appleTimestamp / 1000)) > 2 || ((timestamp) - (appleTimestamp / 1000)) < 0) {
                 AppleMusicService.shared.seekTo(timestamp * 1000)
             }
         }

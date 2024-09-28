@@ -39,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
+import androidx.navigation.NavHost
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -53,6 +54,7 @@ import com.paytondeveloper.sharedqandroid.views.Group.Components.BaseQueueView
 import com.paytondeveloper.sharedqandroid.views.Group.JoinGroupView
 import com.paytondeveloper.sharedqandroid.views.Onboarding.OnboardingMusicService
 import com.paytondeveloper.sharedqandroid.views.Onboarding.OnboardingWelcomeView
+import com.paytondeveloper.sharedqandroid.views.PlaybackQueueView
 import com.paytondeveloper.sharedqandroid.views.PlaybackView
 import com.paytondeveloper.sharedqandroid.views.components.SongImage
 
@@ -125,7 +127,15 @@ fun Main() {
         }
     }
     if (viewModel.connectedGroup != null) {
-        PlaybackView()
+        val playbackNavController = rememberNavController()
+        NavHost(playbackNavController, startDestination = "playback") {
+            composable("playback") {
+                PlaybackView(nav = playbackNavController)
+            }
+            composable("playback/queue") {
+                PlaybackQueueView(nav = playbackNavController)
+            }
+        }
     }
 }
 
